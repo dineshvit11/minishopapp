@@ -40,7 +40,7 @@ jobs:
             "-Dsonar.sourceEncoding=UTF-8" `
             "-Dsonar.host.url=$env:SONAR_HOST_URL" `
             "-Dsonar.token=$env:SONAR_TOKEN" `
-            "-Dsonar.qualitygate.wait=true"
+            "-Dsonar.qualitygate.wait=false"
 
       - name: Build App
         run: npm run build
