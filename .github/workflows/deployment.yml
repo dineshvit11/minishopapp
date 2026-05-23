@@ -1,4 +1,4 @@
-name: Test Runner
+name: Deployment
 
 on:
   push:
@@ -6,11 +6,20 @@ on:
       - main
 
 jobs:
-  test:
-    runs-on: [self-hosted, Windows, X64]
+  Deployment:
+    runs-on: [self-hosted, windows, x64]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check Node Version
+        run: node -v
 
       - name: Install Dependencies
         run: npm install
