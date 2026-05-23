@@ -30,12 +30,12 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           sonar-scanner `
-            -Dsonar.projectKey=minishopapp `
-            -Dsonar.projectName=minishopapp `
-            -Dsonar.sources=src `
-            -Dsonar.sourceEncoding=UTF-8 `
-            -Dsonar.host.url=$env:SONAR_HOST_URL `
-            -Dsonar.login=$env:SONAR_TOKEN
+            "-Dsonar.projectKey=minishopapp" `
+            "-Dsonar.projectName=minishopapp" `
+            "-Dsonar.sources=src" `
+            "-Dsonar.sourceEncoding=UTF-8" `
+            "-Dsonar.host.url=$env:SONAR_HOST_URL" `
+            "-Dsonar.login=$env:SONAR_TOKEN"
 
       - name: Install Dependencies
         run: npm install
