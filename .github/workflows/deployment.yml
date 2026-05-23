@@ -24,6 +24,15 @@ jobs:
       - name: Check Node Version
         run: node -v
 
+            - name: SonarQube Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          sonar-scanner `
+          -Dsonar.login=$env:SONAR_TOKEN `
+          -Dsonar.host.url=$env:SONAR_HOST_URL
+
       - name: Install Dependencies
         run: npm install
 
