@@ -24,7 +24,11 @@ jobs:
       - name: Check Node Version
         run: node -v
 
+      - name: Install Dependencies
+        run: npm install
+
       - name: SonarQube Scan
+        shell: powershell
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -35,10 +39,8 @@ jobs:
             "-Dsonar.sources=src" `
             "-Dsonar.sourceEncoding=UTF-8" `
             "-Dsonar.host.url=$env:SONAR_HOST_URL" `
-            "-Dsonar.token=$env:SONAR_TOKEN"
-
-      - name: Install Dependencies
-        run: npm install
+            "-Dsonar.token=$env:SONAR_TOKEN" `
+            "-Dsonar.qualitygate.wait=true"
 
       - name: Build App
         run: npm run build
