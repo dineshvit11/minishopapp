@@ -41,7 +41,7 @@ jobs:
             "-Dsonar.host.url=$env:SONAR_HOST_URL" `
             "-Dsonar.token=$env:SONAR_TOKEN" `
             "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.info" `
-            "-Dsonar.qualitygate.wait=false"
+            "-Dsonar.qualitygate.wait=true"
 
       - name: Build App
         run: npm run build
