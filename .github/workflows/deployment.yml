@@ -1,8 +1,5 @@
 name: Deployment
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 on:
   push:
     branches:
@@ -19,23 +16,24 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 24
-
-      - name: Check Node Version
-        run: node -v
-
-      - name: SonarQube Scan
-        run: |
-          sonar-scanner `
-            "-Dsonar.projectKey=minishopapp" `
-            "-Dsonar.projectName=minishopapp" `
-            "-Dsonar.sources=src" `
-            "-Dsonar.sourceEncoding=UTF-8" `
-            "-Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}" `
-            "-Dsonar.token=${{ secrets.SONAR_TOKEN }}"
+          node-version: 20
 
       - name: Install Dependencies
         run: npm install
+
+      - name: SonarQube Scan
+        shell: powershell
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          sonar-scanner `
+            -Dsonar.projectKey=minishopapp `
+            -Dsonar.projectName=minishopapp `
+            -Dsonar.sources=src `
+            -Dsonar.sourceEncoding=UTF-8 `
+            -Dsonar.host.url=$env:SONAR_HOST_URL `
+            -Dsonar.token=$env:SONAR_TOKEN
 
       - name: Build App
         run: npm run build
