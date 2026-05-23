@@ -18,9 +18,6 @@ const theme = createTheme();
 const AppShell = () => {
   const { successMessage } = React.useContext(AuthContext);
 
-  const password = "Admin@123";
-  eval("console.log(password)");
-  
   return (
     <Router>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
