@@ -24,12 +24,14 @@ jobs:
       - name: Check Node Version
         run: node -v
 
-            - name: SonarQube Scan
+      # SonarQube Scanning BEFORE Build
+      - name: SonarQube Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           sonar-scanner `
+          -Dproject.settings=.github/workflows/sonar-project.properties `
           -Dsonar.login=$env:SONAR_TOKEN `
           -Dsonar.host.url=$env:SONAR_HOST_URL
 
