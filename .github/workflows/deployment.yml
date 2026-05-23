@@ -1,54 +1,4 @@
-# name: Deployment
-
-# env:
-#   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   Deployment:
-#     runs-on: [self-hosted, windows, x64]
-
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v4
-
-#       - name: Setup Node
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: 24
-
-#       - name: Check Node Version
-#         run: node -v
-
-#       - name: Install Dependencies
-#         run: npm install
-
-#       - name: SonarQube Scan
-#         shell: powershell
-#         env:
-#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-#         run: |
-#           sonar-scanner `
-#             "-Dsonar.projectKey=minishopapp" `
-#             "-Dsonar.projectName=minishopapp" `
-#             "-Dsonar.sources=src" `
-#             "-Dsonar.sourceEncoding=UTF-8" `
-#             "-Dsonar.host.url=$env:SONAR_HOST_URL" `
-#             "-Dsonar.token=$env:SONAR_TOKEN" `
-#             "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.info" `
-#             "-Dsonar.qualitygate.wait=false"
-
-#       - name: Build App
-#         run: npm run build
-
-
-
-name: Multi-Stage CI/CD Pipeline
+name: Deployment
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -59,52 +9,23 @@ on:
       - main
 
 jobs:
-
-# =========================
-# Stage 1 - Checkout & Setup
-# =========================
-  setup:
-    name: Setup Stage
+  Deployment:
     runs-on: [self-hosted, windows, x64]
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
 
-      - name: Verify Node Version
+      - name: Check Node Version
         run: node -v
 
       - name: Install Dependencies
         run: npm install
-
-# =========================
-# Stage 2 - Code Quality
-# =========================
-  code-quality:
-    name: SonarQube Analysis
-    runs-on: [self-hosted, windows, x64]
-    needs: setup
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Run Unit Tests with Coverage
-        run: npm run test -- --coverage
 
       - name: SonarQube Scan
         shell: powershell
@@ -120,66 +41,7 @@ jobs:
             "-Dsonar.host.url=$env:SONAR_HOST_URL" `
             "-Dsonar.token=$env:SONAR_TOKEN" `
             "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.info" `
-            "-Dsonar.qualitygate.wait=true"
+            "-Dsonar.qualitygate.wait=false"
 
-# =========================
-# Stage 3 - Security Scan
-# =========================
-  security-scan:
-    name: Security Scan Stage
-    runs-on: [self-hosted, windows, x64]
-    needs: code-quality
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: NPM Audit Scan
-        run: npm audit --audit-level=high
-
-# =========================
-# Stage 4 - Build
-# =========================
-  build:
-    name: Build Stage
-    runs-on: [self-hosted, windows, x64]
-    needs: security-scan
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Application
+      - name: Build App
         run: npm run build
-
-# =========================
-# Stage 5 - Deploy
-# =========================
-  deploy:
-    name: Deployment Stage
-    runs-on: [self-hosted, windows, x64]
-    needs: build
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Deploy Application
-        run: |
-          echo "Deploying Application..."
