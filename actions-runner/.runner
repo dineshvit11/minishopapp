@@ -1,0 +1,11 @@
+﻿{
+  "agentId": 2,
+  "agentName": "ADMIN",
+  "poolId": 1,
+  "poolName": "Default",
+  "serverUrl": "https://pipelinesghubeus4.actions.githubusercontent.com/0fpiXA3U3wQmuPtM9aNKfbBmkgDwuC3gitjjISzN7vc6zTMxmN/",
+  "gitHubUrl": "https://github.com/dineshvit11/minishopapp",
+  "workFolder": "_work",
+  "useV2Flow": true,
+  "serverUrlV2": "https://broker.actions.githubusercontent.com/"
+}
