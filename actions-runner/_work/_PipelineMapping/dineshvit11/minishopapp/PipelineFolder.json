@@ -1,0 +1,12 @@
+﻿{
+  "repositoryName": "dineshvit11/minishopapp",
+  "pipelineDirectory": "minishopapp",
+  "workspaceDirectory": "minishopapp\\minishopapp",
+  "repositories": {
+    "dineshvit11/minishopapp": {
+      "repositoryPath": "minishopapp\\minishopapp",
+      "lastRunOn": "05/23/2026 14:34:07 +05:30"
+    }
+  },
+  "lastRunOn": "05/23/2026 14:34:07 +05:30"
+}
