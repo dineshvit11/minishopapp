@@ -12,5 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Test
-        run: echo "Self Hosted Runner Working"
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build App
+        run: npm run build
