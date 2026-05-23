@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: app-deployment
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: minishop
+
+  template:
+    metadata:
+      labels:
+        app: minishop
+
+    spec:
+      containers:
+      - name: minishop-container
+        image: onlinehop.azurecr.io/minishop:v5
+
+        ports:
+        - containerPort: 80
