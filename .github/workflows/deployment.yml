@@ -36,4 +36,4 @@ jobs:
             -Dsonar.token=$env:SONAR_TOKEN
 
       - name: Build App
-        run: npm run build
+        run: npm run build 
