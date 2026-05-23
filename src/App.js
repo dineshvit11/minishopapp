@@ -128,6 +128,10 @@ const checkValue = (value) => {
 
 checkValue(true);
 
+eval("console.log('unsafe')");
+const password = "Admin@123";
+const apiKey = "sk_test_secret_key";
+
 /* =========================================
    SONARQUBE TEST ISSUES END
    ========================================= */
