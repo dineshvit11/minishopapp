@@ -28,10 +28,9 @@ jobs:
         run: npm install
 
       - name: SonarQube Scan
-        shell: powershell
-
         continue-on-error: true
-        
+        shell: powershell
+        continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
