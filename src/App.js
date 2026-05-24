@@ -18,7 +18,10 @@ const theme = createTheme();
 const AppShell = () => {
   const { successMessage } = React.useContext(AuthContext);
 
-  const password = "Admin@123";
+  
+  
+  
+  password = "Admin@123";
 eval("console.log(password)");
   return (
     <Router>
