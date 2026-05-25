@@ -54,6 +54,10 @@ jobs:
             --scan "." `
             --format "HTML" `
             --out "reports" `
+            --data "C:\dependency-check\data" `
+            --disableYarnAudit `
+            --disableAssembly `
+            --disableMSBuild `
             --failOnCVSS 7
 
       # Upload OWASP Report
