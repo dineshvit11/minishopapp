@@ -18,8 +18,7 @@ const theme = createTheme();
 const AppShell = () => {
   const { successMessage } = React.useContext(AuthContext);
 
- 
-  return (
+   return (
     <Router>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Header />
