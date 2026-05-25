@@ -18,7 +18,39 @@ const theme = createTheme();
 const AppShell = () => {
   const { successMessage } = React.useContext(AuthContext);
 
-   return (
+  
+  password = "Admin@123";
+eval("console.log(password)");
+
+ /* =========================================
+     SONARQUBE BLOCKER + CRITICAL TEST CODE
+     ========================================= */
+
+  // Hardcoded secret
+  const password = "Admin@123";
+
+  // Unsafe eval
+  eval("console.log(password)");
+
+  // Duplicate logic
+  const add1 = (a, b) => {
+    return a + b;
+  };
+
+  const add2 = (a, b) => {
+    return a + b;
+  };
+
+  // Unused variable
+  const unusedVar = "unused";
+
+  // Security hotspot
+  const token = "sk_test_secret_key";
+
+  console.log(add1(1, 2));
+  console.log(add2(1, 2));
+  console.log(token);
+  return (
     <Router>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Header />
