@@ -43,6 +43,22 @@ jobs:
             "-Dsonar.token=$env:SONAR_TOKEN" `
             "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.info" `
             "-Dsonar.qualitygate.wait=true"
+            
+       # OWASP Dependency Check
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: "minishopapp"
+          path: "."
+          format: "HTML"
+          out: "reports"
+
+      # Upload OWASP Report
+      - name: Upload OWASP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: OWASP-Report
+          path: reports
 
       - name: Build App
         run: npm run build
