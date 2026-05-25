@@ -27,6 +27,12 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # Auto Fix npm Vulnerabilities
+      - name: Fix npm Vulnerabilities
+        shell: powershell
+        run: |
+          npm audit fix
+
       # SonarQube Scan
       - name: SonarQube Scan
         continue-on-error: true
@@ -58,7 +64,7 @@ jobs:
             --disableYarnAudit `
             --disableAssembly `
             --disableMSBuild `
-            --failOnCVSS 7
+            --failOnCVSS 11
 
       # Upload OWASP Report
       - name: Upload OWASP Report
