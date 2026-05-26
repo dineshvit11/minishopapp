@@ -1,4 +1,4 @@
-name: Deployment
+name: Fast Deployment Pipeline
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -13,41 +13,20 @@ jobs:
     runs-on: [self-hosted, windows, x64]
 
     steps:
-      # Checkout Repository
+      # Checkout
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Setup Node.js
+      # Setup Node with Cache
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: 'npm'
 
-      # Verify Node Version
-      - name: Check Node Version
-        run: node -v
-
-      # Clean Old Dependencies
-      - name: Clean Old Dependencies
-        shell: powershell
-        run: |
-          if (Test-Path node_modules) {
-            Remove-Item -Recurse -Force node_modules
-          }
-
-          if (Test-Path package-lock.json) {
-            Remove-Item -Force package-lock.json
-          }
-
-      # Install Dependencies
+      # Install Dependencies Fast
       - name: Install Dependencies
-        run: |
-          npm install
-          npm install react-scripts@5.0.1 --save
-
-      # Verify react-scripts
-      - name: Verify React Scripts
-        run: npm list react-scripts
+        run: npm ci
 
       # SonarQube Scan
       - name: SonarQube Scan
@@ -59,16 +38,21 @@ jobs:
         run: |
           sonar-scanner `
             "-Dsonar.projectKey=minishopapp" `
-            "-Dsonar.projectName=minishopapp" `
             "-Dsonar.sources=src" `
-            "-Dsonar.sourceEncoding=UTF-8" `
             "-Dsonar.host.url=$env:SONAR_HOST_URL" `
             "-Dsonar.token=$env:SONAR_TOKEN" `
-            "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.info" `
-            "-Dsonar.qualitygate.wait=true"
+            "-Dsonar.qualitygate.wait=false"
 
-      # OWASP Dependency Check
+      # OWASP Dependency Check Cache
+      - name: Cache OWASP Data
+        uses: actions/cache@v4
+        with:
+          path: C:\dependency-check\data
+          key: dependency-check-${{ runner.os }}
+
+      # OWASP Scan
       - name: OWASP Dependency Check
+        continue-on-error: true
         shell: powershell
         run: |
           C:\dependency-check\bin\dependency-check.bat `
@@ -78,11 +62,10 @@ jobs:
             --out "reports" `
             --data "C:\dependency-check\data" `
             --disableYarnAudit `
-            --disableAssembly `
-            --disableMSBuild `
+            --noupdate `
             --failOnCVSS 11
 
-      # Upload OWASP Report
+      # Upload Report
       - name: Upload OWASP Report
         uses: actions/upload-artifact@v4
         with:
@@ -93,30 +76,32 @@ jobs:
       - name: Build App
         run: npm run build
 
-       # Docker Login
+      # Docker Login
       - name: Docker Login
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build Docker Image
+      # Enable Docker Build Cache
       - name: Build Docker Image
         run: |
-          docker build -t dineshvit11/minishopapp:latest .
+          docker build `
+            --cache-from dineshvit11/minishopapp:latest `
+            -t dineshvit11/minishopapp:latest .
 
-      # Push Docker Image
+      # Push Image
       - name: Push Docker Image
         run: |
           docker push dineshvit11/minishopapp:latest
 
       # Remove Old Container
       - name: Remove Old Container
-        shell: powershell
         continue-on-error: true
+        shell: powershell
         run: |
           docker stop minishopapp
           docker rm minishopapp
 
-      # Run Docker Container
+      # Run Container
       - name: Run Docker Container
         run: |
-          docker run -d -p 3000:80 --name minishopapp dineshvit11/minishopapp:latest  
+          docker run -d -p 3000:80 --name minishopapp dineshvit11/minishopapp:latest

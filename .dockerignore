@@ -1,0 +1,58 @@
+# Dependencies
+node_modules
+npm-debug.log
+
+# Build folders
+build
+dist
+
+# Git files
+.git
+.gitignore
+
+# GitHub Actions
+.github
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode
+.idea
+
+# Coverage reports
+coverage
+
+# SonarQube
+.scannerwork
+
+# OWASP Reports
+reports
+
+# Docker files
+Dockerfile*
+docker-compose*
+
+# Temporary files
+tmp
+temp
+*.tmp
+
+# Cache
+.cache
+npm-cache
+
+# Optional
+README.md
