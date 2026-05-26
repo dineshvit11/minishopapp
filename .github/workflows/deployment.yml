@@ -2,6 +2,7 @@ name: Fast Deployment Pipeline
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  DOCKER_BUILDKIT: 1
 
 on:
   push:
@@ -13,20 +14,23 @@ jobs:
     runs-on: [self-hosted, windows, x64]
 
     steps:
-      # Checkout
+
+      # Checkout Source Code
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Setup Node with Cache
+      # Setup Node.js with npm cache
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
+          cache: npm
 
-      # Install Dependencies Fast
+      # Install Dependencies
       - name: Install Dependencies
-        run: npm ci
+        shell: powershell
+        run: |
+          npm ci --prefer-offline --no-audit
 
       # SonarQube Scan
       - name: SonarQube Scan
@@ -37,35 +41,45 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           sonar-scanner `
-            "-Dsonar.projectKey=minishopapp" `
-            "-Dsonar.sources=src" `
-            "-Dsonar.host.url=$env:SONAR_HOST_URL" `
-            "-Dsonar.token=$env:SONAR_TOKEN" `
-            "-Dsonar.qualitygate.wait=false"
+            -Dsonar.projectKey=minishopapp `
+            -Dsonar.sources=src `
+            -Dsonar.host.url=$env:SONAR_HOST_URL `
+            -Dsonar.token=$env:SONAR_TOKEN `
+            -Dsonar.qualitygate.wait=false
 
-      # OWASP Dependency Check Cache
+      # Cache OWASP Dependency Check Database
       - name: Cache OWASP Data
         uses: actions/cache@v4
         with:
           path: C:\dependency-check\data
-          key: dependency-check-${{ runner.os }}
+          key: dependency-check-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            dependency-check-${{ runner.os }}-
 
-      # OWASP Scan
+      # OWASP Dependency Check
       - name: OWASP Dependency Check
         continue-on-error: true
         shell: powershell
         run: |
+          if (!(Test-Path "reports")) {
+            New-Item -ItemType Directory -Path "reports"
+          }
+
           C:\dependency-check\bin\dependency-check.bat `
             --project "minishopapp" `
-            --scan "." `
+            --scan "package.json" `
             --format "HTML" `
             --out "reports" `
             --data "C:\dependency-check\data" `
             --disableYarnAudit `
+            --disableNodeAudit `
             --noupdate `
+            --exclude "node_modules" `
+            --exclude "build" `
+            --exclude ".git" `
             --failOnCVSS 11
 
-      # Upload Report
+      # Upload OWASP Report
       - name: Upload OWASP Report
         uses: actions/upload-artifact@v4
         with:
@@ -74,34 +88,63 @@ jobs:
 
       # Build React App
       - name: Build App
-        run: npm run build
+        shell: powershell
+        run: |
+          npm run build
 
       # Docker Login
       - name: Docker Login
+        shell: powershell
         run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # Enable Docker Build Cache
+      # Pull Existing Image for Cache
+      - name: Pull Existing Docker Image
+        continue-on-error: true
+        shell: powershell
+        run: |
+          docker pull dineshvit11/minishopapp:latest
+
+      # Build Docker Image
       - name: Build Docker Image
+        shell: powershell
         run: |
           docker build `
             --cache-from dineshvit11/minishopapp:latest `
             -t dineshvit11/minishopapp:latest .
 
-      # Push Image
+      # Push Docker Image
       - name: Push Docker Image
+        shell: powershell
         run: |
           docker push dineshvit11/minishopapp:latest
+
+      # Stop Old Container
+      - name: Stop Old Container
+        continue-on-error: true
+        shell: powershell
+        run: |
+          docker stop minishopapp
 
       # Remove Old Container
       - name: Remove Old Container
         continue-on-error: true
         shell: powershell
         run: |
-          docker stop minishopapp
           docker rm minishopapp
 
-      # Run Container
+      # Run New Container
       - name: Run Docker Container
+        shell: powershell
         run: |
-          docker run -d -p 3000:80 --name minishopapp dineshvit11/minishopapp:latest
+          docker run -d `
+            -p 3000:80 `
+            --name minishopapp `
+            --restart always `
+            dineshvit11/minishopapp:latest
+
+      # Verify Running Container
+      - name: Verify Container
+        shell: powershell
+        run: |
+          docker ps
