@@ -19,7 +19,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Setup Node.js with npm cache
+      # Setup Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -96,9 +96,11 @@ jobs:
       - name: Docker Login
         shell: powershell
         run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          "${{ secrets.DOCKER_PASSWORD }}" | docker login `
+            --username "${{ secrets.DOCKER_USERNAME }}" `
+            --password-stdin
 
-      # Pull Existing Image for Cache
+      # Pull Existing Docker Image
       - name: Pull Existing Docker Image
         continue-on-error: true
         shell: powershell
