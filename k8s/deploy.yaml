@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: minishopapp
+  namespace: minishop-dev
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: minishopapp
+
+  template:
+    metadata:
+      labels:
+        app: minishopapp
+
+    spec:
+      containers:
+      - name: minishopapp
+        image: dineshvit11/minishopapp:latest
+
+        ports:
+        - containerPort: 80
+
+        env:
+        - name: APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_ENV
+
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_HOST
+
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: DB_PASSWORD

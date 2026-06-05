@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: minishopapp-ingress
+  namespace: minishop-dev
+
+spec:
+  rules:
+  - host: minishop.local
+
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+
+        backend:
+          service:
+            name: minishopapp-service
+
+            port:
+              number: 80
