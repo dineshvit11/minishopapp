@@ -99,11 +99,11 @@ jobs:
 
       # Pull Existing Docker Image
       - name: Pull Existing Docker Image
-        continue-on-error: true 
+        continue-on-error: true
         shell: powershell
         run: |
-          docker pull dineshvit11/minishopapp:latest      
-      
+          docker pull dineshvit11/minishopapp:latest
+
       # Build Docker Image
       - name: Build Docker Image
         shell: powershell
